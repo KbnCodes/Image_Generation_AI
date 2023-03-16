@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, useNavigate } from "react-router-dom";
 
 import { preview } from "../assets";
-import { getRandomPrompt } from "../utils/getRandomPrompt";
+import { getRandomPrompt } from "../utils";
 import { FormField, Loader } from "../components";
 const CreatePost = () => {
   const navigate = useNavigate();
@@ -10,7 +10,30 @@ const CreatePost = () => {
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (form.prompt && form.photo) {
+      setLoading(true);
+      try {
+        const response = await fetch("http://localhost:8080/api/i/post", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.strigify(form),
+        });
+        await response.json();
+        navigate("/");
+      } catch (error) {
+        alert(error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert("Please enter prompt and generate image");
+    }
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -39,8 +62,8 @@ const CreatePost = () => {
       } finally {
         setGeneratingImg(false);
       }
-    }else{
-      alert('Please enter a prompt')
+    } else {
+      alert("Please enter a prompt");
     }
   };
 
